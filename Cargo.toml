@@ -1,0 +1,8 @@
+[package]
+name = "docker_engine_api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+curl = "*"
+serde_json = "*"
