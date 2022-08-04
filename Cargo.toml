@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-curl = "*"
 serde_json = "*"
+curl = "*"
+hyper = { version = "*", features = ["client", "http1"] }
+tokio = { version = "*", features = ["net", "rt"] } 
