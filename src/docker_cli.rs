@@ -1,9 +1,6 @@
 const CONTAINER_ID: &str = "note";
 
-// curl --unix-socket /var/run/docker.sock http://localhost/version
-// reqwest not support unix socket
-// hyper Client::from(steam) tokio UnixStream(tokio::net::UnixStream::connect)
-fn docker_engine_api_get(path: &str) {
+fn docker_engine_api_get_inner(path: &str) -> Vec<u8> {
     let mut handle = curl::easy::Easy::new();
     handle.unix_socket("/var/run/docker.sock").unwrap();
     handle.url(&format!("http://localhost{path}")).unwrap();
@@ -19,9 +16,17 @@ fn docker_engine_api_get(path: &str) {
         transfer.perform().unwrap();
     }
     let status_code = handle.response_code().unwrap();
+    dbg!(status_code);
+    output
+}
+
+// curl --unix-socket /var/run/docker.sock http://localhost/version
+// reqwest not support unix socket
+// hyper Client::from(steam) tokio UnixStream(tokio::net::UnixStream::connect)
+fn docker_engine_api_get(path: &str) {
+    let output = docker_engine_api_get_inner(path);
     let output = serde_json::from_slice::<serde_json::Value>(&output).unwrap();
     println!("GET {path}");
-    dbg!(status_code);
     println!("{}", serde_json::to_string_pretty(&output).unwrap());
 }
 
@@ -86,4 +91,17 @@ fn docker_logs() {
         }
         println!("{}", String::from_utf8_lossy(&body));
     });
+}
+
+// current change to the base image?
+#[test]
+fn changes() {
+    docker_engine_api_get(&format!("/containers/{CONTAINER_ID}/changes"));
+}
+
+// Export a container's filesystem as a tar archive
+#[test]
+fn docker_export() {
+    let output = docker_engine_api_get_inner(&format!("/containers/{CONTAINER_ID}/export"));
+    std::fs::write("target/output.tar", output).unwrap();
 }
