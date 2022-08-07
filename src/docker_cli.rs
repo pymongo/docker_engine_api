@@ -105,3 +105,15 @@ fn docker_export() {
     let output = docker_engine_api_get_inner(&format!("/containers/{CONTAINER_ID}/export"));
     std::fs::write("target/output.tar", output).unwrap();
 }
+
+/// get cpu/mem usage of container, similar to kubectl top 
+#[test]
+fn docker_stats() {
+    // TODO top-like stream output would block infinite
+    // docker_engine_api_get(&format!("/containers/{CONTAINER_ID}/stats"));
+}
+
+#[test]
+fn docker_images() {
+    docker_engine_api_get("/images/json");
+}
