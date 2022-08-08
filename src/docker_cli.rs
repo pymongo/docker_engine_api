@@ -1,4 +1,5 @@
 const CONTAINER_ID: &str = "note";
+const IMAGE_NAME: &str = "fedora:36";
 
 fn docker_engine_api_get_inner(path: &str) -> Vec<u8> {
     let mut handle = curl::easy::Easy::new();
@@ -116,4 +117,35 @@ fn docker_stats() {
 #[test]
 fn docker_images() {
     docker_engine_api_get("/images/json");
+}
+
+#[test]
+fn inspect_a_image() {
+    docker_engine_api_get(&format!("/images/{IMAGE_NAME}/json"));
+}
+
+#[test]
+fn docker_history() {
+    docker_engine_api_get(&format!("/images/{IMAGE_NAME}/history"));
+}
+
+/// search image on docker hub
+#[test]
+fn docker_search() {
+    docker_engine_api_get(&format!("/images/search?team=fedora:36"));
+}
+
+#[test]
+fn docker_network_ls() {
+    docker_engine_api_get("/networks");
+}
+
+#[test]
+fn docker_volume_ls() {
+    docker_engine_api_get("/volumes");
+}
+
+#[test]
+fn docker_inspect_volume() {
+    docker_engine_api_get("/volumes/minikube");
 }
